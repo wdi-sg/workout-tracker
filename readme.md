@@ -100,6 +100,10 @@ Research running pace, or use this link: [https://www.verywellfit.com/walking-an
 
 
 #### Further
+Add a column named `created_at` with data type date and display the date the item was added. Look ahead in the gitbook for how to format the date type with `pg` library [https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html](https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html)
+
+
+#### Further
 Add a stats functionality to give you an average time / distance of runs for a given period of time.
 
 ```bash
@@ -115,7 +119,11 @@ Add the ability to get a list of completed runs ordered by time (ascending and d
 Add the ability to get a list of completed runs ordered by time (ascending and descending) **for a given time period**
 
 #### Further
-Add a column named `created_at` with data type date and display the date the item was added. Look ahead in the gitbook for how to format the date type with `pg` library [https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html](https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html)
+Add the ability to get a list of runs above or below a certain pace.
+
+```bash
+$ node index.js findruns below 4:30
+```
 
 #### Further
 Add the ability to permanently delete an item.
