@@ -37,7 +37,8 @@ client.connect((err) => {
 
 function addWorkout() {
     queryText = 'INSERT INTO workouts(complete,distance,name) VALUES ($1, $2,$3) RETURNING *';
-              const values = [checkOff, distance, name]
+
+        const values = [checkOff, distance, name]
         client.query(queryText, values, (err,res)=>{
             if (err){
                 console.log("query error", err.message);
@@ -57,7 +58,11 @@ function showWorkout(){
           console.log("query error", err.message);
         } else {
             for (let i=0; i<res.rows.length; i++){
-          console.log(`${res.rows[i].id}.`, `${res.rows[i].complete} - `, `${res.rows[i].distance}km - `, res.rows[i].name);
+                if (res.rows[i].time === null){
+                    console.log(`${res.rows[i].id}.`, `${res.rows[i].complete} - `, `${res.rows[i].distance}km - `, res.rows[i].name);
+                } else {
+                    console.log(`${res.rows[i].id}. ${res.rows[i].complete} - ${res.rows[i].distance}km - ${res.rows[i].name} - completed in ${res.rows[i].time} minutes`);
+                }
             }
           }
         });
