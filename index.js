@@ -83,15 +83,33 @@ const addData = function () {
 			console.log("id of the thing you just created:", res.rows[0].id);
 			}
 			endConnection();
-		});
 
+		});
 	});
 
 }
 
-
+// done needs a time to update
 const doneData = function () {
 	console.log('done entered')
+	client.connect((err) => {
+
+	if( err ){
+		console.log( "error", err.message );
+	}
+	let queryText = "UPDATE workout SET time="+process.argv[4]+" WHERE id ="+process.argv[3];
+
+	client.query(queryText, (err, res) => {
+	    if (err) {
+	      console.log("query error", err.message);
+	    } else {
+	      console.log("done!");
+	    }
+	    endConnection();
+	});
+
+	});
+
 }
 
 
