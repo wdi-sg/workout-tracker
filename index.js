@@ -52,8 +52,8 @@ if (process.argv[2] === "insert") {
         } else {
 
             console.log("done!");
-            endConnection();
         }
+        endConnection();
     });
 
 } else if (process.argv[2] === "select") {
@@ -71,13 +71,41 @@ if (process.argv[2] === "insert") {
 
             // Loop through all rows in the DB and display
             for(let i = 0; i < res.rows.length; i++) {
-                console.log(res.rows[i].id + ". [ ] " + res.rows[i].distance + "km - " + res.rows[i].name);
-            }
 
-            endConnection();
+                if (res.rows[i].time === null) {
+
+                    console.log(res.rows[i].id + ". [ ] " + res.rows[i].distance + "km - " + res.rows[i].name);
+
+                } else {
+
+                    console.log(res.rows[i].id + ". [x] " + res.rows[i].distance + "km - " + res.rows[i].name);
+                }
+
+            }
         }
+        endConnection();
+    });
+
+} else if (process.argv[2] === "complete") {
+
+    let id = parseInt(process.argv[3]);
+    let timeTaken = process.argv[4];
+
+    let inputValues = [id, timeTaken];
+
+    const queryText = 'UPDATE workout SET time = $2 WHERE id = $1';
+
+    client.query(queryText, inputValues, (err, res) => {
+
+        if (err) {
+
+            console.log("Query error: ", err.message);
+
+        } else {
+
+            console.log("done updating");
+
+        }
+        endConnection();
     });
 }
-
-
-
