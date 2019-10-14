@@ -33,25 +33,33 @@ const getOutputText = res => {
 
   for (let i = 0; i < workouts.length; i++) {
     let outputTime = "";
+    let outputPace = "";
     if (workouts[i].time) {
       let minutes = "";
       let seconds = "";
+      let pace = "";
+      let distance = +workouts[i].distance;
 
       if (workouts[i].time.includes(".")) {
         let time = workouts[i].time.split(".");
-        minutes = time[0];
-        seconds = time[1];
+        minutes = +time[0];
+        seconds = +time[1];
+        pace = ((minutes + seconds / 60) / distance).toFixed(2);
       } else {
-        minutes = workouts[i].time;
-        seconds = "0";
+        minutes = +workouts[i].time;
+        seconds = 0;
+        pace = (minutes / distance).toFixed(2); 
       }
       outputTime = ` - ${+minutes <= 9 ? "0" + minutes : minutes}:${
         +seconds <= 9 ? "0" + seconds : seconds
       }`;
+
+      outputPace = ` - ${pace}  min/km`;
     }
+
     outputText += `${i + 1}. ${workouts[i].time ? "[ X ]" : "[   ]"} - ${
       workouts[i].distance
-    }km - ${workouts[i].name} ${outputTime} \n`;
+    }km - ${workouts[i].name} ${outputTime} ${outputPace}\n`;
   }
 
   return outputText;
@@ -91,21 +99,26 @@ client.connect(err => {
         let inputId = +input2;
         let inputTime = input3;
         let workouts = res.rows;
-        let workoutId = workouts[inputId-1].id;
+        let workoutId = workouts[inputId - 1].id;
 
         const queryText =
-          "UPDATE workouts SET time = " + inputTime + "WHERE id = " + workoutId + "RETURNING *";
+          "UPDATE workouts SET time = " +
+          inputTime +
+          "WHERE id = " +
+          workoutId +
+          "RETURNING *";
 
         client.query(queryText, (err, res) => {
           if (err) {
             console.log("query error", err.message);
             endConnection();
           } else {
-            console.log(`Updated: \n distance: ${res.rows[0].distance}, name: ${res.rows[0].name}, time: ${res.rows[0].time}`);
+            console.log(
+              `Updated: \n distance: ${res.rows[0].distance}, name: ${res.rows[0].name}, time: ${res.rows[0].time}`
+            );
             endConnection();
           }
         });
-
       }
     });
     // when there are is no input, e.g. node index
