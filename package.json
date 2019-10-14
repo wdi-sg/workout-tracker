@@ -1,0 +1,22 @@
+{
+  "name": "workout-tracker",
+  "version": "1.0.0",
+  "description": "![https://media.giphy.com/media/SdW7SEleK00Ug/source.gif](https://media.giphy.com/media/SdW7SEleK00Ug/source.gif)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datguyrhy/workout-tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/datguyrhy/workout-tracker/issues"
+  },
+  "homepage": "https://github.com/datguyrhy/workout-tracker#readme",
+  "dependencies": {
+    "pg": "^7.12.1"
+  }
+}
