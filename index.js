@@ -12,6 +12,18 @@ const configs = {
 // create a new instance of the client
 const client = new pg.Client(configs);
 
+const endConnection = () => {
+
+    client.end(err => {
+
+        console.log("Client has disconnected.");
+
+        if(err) {
+            console.log("Error during disconnection", err.stack);
+        }
+    });
+};
+
 // Make sure DB connection is ok
 client.connect((err) => {
 
@@ -40,6 +52,7 @@ if (process.argv[2] === "insert") {
         } else {
 
             console.log("done!");
+            endConnection();
         }
     });
 
@@ -60,7 +73,11 @@ if (process.argv[2] === "insert") {
             for(let i = 0; i < res.rows.length; i++) {
                 console.log(res.rows[i].id + ". [ ] " + res.rows[i].distance + "km - " + res.rows[i].name);
             }
+
+            endConnection();
         }
     });
 }
+
+
 
