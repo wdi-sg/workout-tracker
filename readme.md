@@ -49,7 +49,7 @@ $ node index.js complete 1 24.5
 |  1  |  2       | easy       | 12    |
 |  2  |  2       | hard       | 5     |
 |  3  |  20      | distance   | 6     |
-|  3  |  20      | distance   |       |
+|  4  |  20      | distance   |       |
 ```
 
 ```bash
@@ -57,8 +57,8 @@ $ node index.js
 ```
 
 ```
-1. [ ] - 5.7km - 12:00
-2. [ ] - 6.8km - 13:00
+1. [ ] - 5.7km 
+2. [ ] - 6.8km
 3. [x] - 9.2km - 4:00
 ```
 
