@@ -28,7 +28,9 @@ client.connect((err) => {
 ║║║├┤ │  │  │ ││││├┤
 ╚╩╝└─┘┴─┘└─┘└─┘┴ ┴└─┘
 =================================*/
-        case "sort":
+        case undefined:
+            console.log("Welcome!\nkey 'select' to see all information\nkey 'insert' followed by -distance- -name- to add\nkey 'update' followed by -id- -time- to add time\nkey 'delete' followed by -id- to remove entry\nkey 'pace' to get pace for all runs\nkey 'average time' or 'average distance' to get average of completed workouts\nkey 'sort' followed by -time or distance- -ascending or descending- to sort workouts")
+            break;
 /*=================================
 ╔═╗┌─┐┬  ┌─┐┌─┐┌┬┐  ╔═╗┬  ┬
 ╚═╗├┤ │  ├┤ │   │   ╠═╣│  │
