@@ -78,7 +78,7 @@ if (process.argv[2] === "insert") {
 
                 } else {
 
-                    console.log(res.rows[i].id + ". [x] " + res.rows[i].distance + "km - " + res.rows[i].name);
+                    console.log(res.rows[i].id + ". [x] " + res.rows[i].distance + "km - " + res.rows[i].name  + " - " + res.rows[i].time);
                 }
 
             }
