@@ -17,7 +17,7 @@ let inputName = process.argv[4];
 let inputTime = process.argv[5];
 let outputTime = "";
 
-console.log('Commands: index.js (shows all), add distance name time, number done, number delete')
+console.log('Commands: index.js (shows all), add distance name time, number done, number delete, sort a (ascending by run time) d (descending)')
 
 const endConnection = ()=>{
 	client.end(err => {
@@ -114,8 +114,6 @@ const doneData = function () {
 }
 
 
-// done needs a time to update
-// DELETE from students WHERE name = 'Mary';
 const deleteData = function () {
 	// console.log('delete entered')
 	client.connect((err) => {
@@ -138,6 +136,11 @@ const deleteData = function () {
 
 }
 
+// ORDER BY column_name, column_name ASC
+
+const sortData = function () {
+	console.log("sort data start!");
+	}
 
 	switch(actionType) {
 	  case 'show':
@@ -153,6 +156,10 @@ const deleteData = function () {
 	    break;
 	  case 'delete':
 		deleteData();
+		// showData(obj);
+	    break;
+	  case 'sort':
+		sortData();
 		// showData(obj);
 	    break;
 	   default: 
