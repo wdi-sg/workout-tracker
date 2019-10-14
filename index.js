@@ -12,12 +12,13 @@ const client = new pg.Client(configs);
 console.log("     ***** WORKOUT_TRACKER *****.     ");
 console.log("Instructions:");
 //console.log("LIST - show workouts")
-console.log("ADD  - \'add\' distance name");
-console.log("COMPLETE - \'complete\' id time(hhmmss)");
+console.log("ADD      - add \'distance\' \'name\'");
+console.log("COMPLETE - complete \'id\' \'time(hhmmss)\'");
+console.log("SORT     - sort \'distance/time\' \'ASC/DESC\'")
 console.log("---------------------------------------");
 
 const list = function() {
-    let queryText = 'SELECT * FROM workout';
+    let queryText = 'SELECT * FROM workout ORDER BY id';
 
     client.query(queryText, (err, res) => {
         if (err) {
@@ -32,7 +33,7 @@ const list = function() {
                     console.log(`${id}. [ ] - ${distance}km - ${name}`);
                 } else {
                     var hoursMinutes = time.split(/[.:]/);
-                    console.log(hoursMinutes);
+                    //console.log(hoursMinutes);
                     let pace = ((parseInt(hoursMinutes[0] * 60) + parseInt(hoursMinutes[1])) / distance).toFixed(2);
                     //let date = row.created_at;
                     // let dateFormat = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
@@ -95,7 +96,8 @@ const whenConnected = (err) => {
         case 'complete':
             let id = process.argv[3];
             let time = process.argv[4];
-            let date = process.argv[5];
+            let today = new Date();
+            let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             let completeValues = [id, time, date];
             console.log(completeValues);
 
@@ -112,8 +114,33 @@ const whenConnected = (err) => {
             break;
 
         case 'sort':
-            break;
+            let sortby = process.argv[3];
+            let order = process.argv[4];
 
+            queryText = `SELECT * FROM workout ORDER BY ${sortby} ${order}`;
+            client.query(queryText, (err, res) => {
+                if (err) {
+                    console.log("query error", err.message);
+                } else {
+                    console.log('**********************************');
+                    console.log(`SORT completed by ${sortby} ${order}`);
+                    const sorted = res.rows.map(row => {
+                        let id = row.id;
+                        let distance = row.distance;
+                        let name = row.name;
+                        let time = row.time;
+                        if (time !== null) {
+                            var hoursMinutes = time.split(/[.:]/);
+                            let pace = ((parseInt(hoursMinutes[0] * 60) + parseInt(hoursMinutes[1])) / distance).toFixed(2);
+                            //let date = row.created_at;
+                            // let dateFormat = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+                            console.log(`${id}. [x] - ${distance}km - ${name} - ${time} - ${pace} m/km`);
+                        }
+                    })
+                }
+                endConnection();
+            })
+            break;
     }
 }
 
