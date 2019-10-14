@@ -2,8 +2,9 @@ const pg = require("pg");
 
 // get user input from the command line
 let userInput = process.argv;
-let inputDistance = userInput[2];
-let inputName = userInput[3];
+let input1 = userInput[2];
+let input2 = userInput[3];
+let input3 = userInput[4];
 
 // config for logging into database
 const configs = {
@@ -29,7 +30,6 @@ const endConnection = () => {
 const getOutputText = res => {
   let outputText = "";
   let workouts = res.rows;
-  console.log("workouts", workouts);
 
   for (let i = 0; i < workouts.length; i++) {
     let outputTime = "";
@@ -49,9 +49,9 @@ const getOutputText = res => {
         +seconds <= 9 ? "0" + seconds : seconds
       }`;
     }
-    outputText += `${i + 1}. ${workouts[i].time ? "[ X ]" : "[   ]"} - ${workouts[i].distance}km - ${
-      workouts[i].name
-    } ${outputTime} \n`;
+    outputText += `${i + 1}. ${workouts[i].time ? "[ X ]" : "[   ]"} - ${
+      workouts[i].distance
+    }km - ${workouts[i].name} ${outputTime} \n`;
   }
 
   return outputText;
@@ -62,9 +62,9 @@ client.connect(err => {
     console.log("error", err.message);
   }
 
-  // when there is input given, e.g. node index.js 3.3 "jog around the house"
-  if (inputDistance && inputName) {
-    const values = [inputDistance, inputName];
+  // when there are 2 inputs, e.g. node index 3.3 "run"
+  if (input1 && input2 && !input3) {
+    const values = [input1, input2];
 
     const queryText =
       "INSERT INTO workouts (distance, name) VALUES ($1, $2) RETURNING *";
@@ -74,13 +74,43 @@ client.connect(err => {
         console.log("query error", err.message);
         endConnection();
       } else {
-        let outputText = `Added: ${res.rows[0].distance} "${res.rows[0].name}".`;
+        let outputText = `Added: distance: ${res.rows[0].distance}, name: "${res.rows[0].name}"`;
         console.log(outputText);
         endConnection();
       }
     });
+    // when there are 3 inputs, e.g. node index complete 1 33
+  } else if (input1 === "complete" && input2 && input3) {
+    const queryText = "SELECT * FROM workouts ORDER BY id";
+
+    client.query(queryText, (err, res) => {
+      if (err) {
+        console.log("query error", err.message);
+        endConnection();
+      } else {
+        let inputId = +input2;
+        let inputTime = input3;
+        let workouts = res.rows;
+        let workoutId = workouts[inputId-1].id;
+
+        const queryText =
+          "UPDATE workouts SET time = " + inputTime + "WHERE id = " + workoutId + "RETURNING *";
+
+        client.query(queryText, (err, res) => {
+          if (err) {
+            console.log("query error", err.message);
+            endConnection();
+          } else {
+            console.log(`Updated: \n distance: ${res.rows[0].distance}, name: ${res.rows[0].name}, time: ${res.rows[0].time}`);
+            endConnection();
+          }
+        });
+
+      }
+    });
+    // when there are is no input, e.g. node index
   } else {
-    const queryText = "SELECT * FROM workouts";
+    const queryText = "SELECT * FROM workouts ORDER BY id";
 
     client.query(queryText, (err, res) => {
       if (err) {
@@ -89,8 +119,6 @@ client.connect(err => {
       } else {
         let outputText = getOutputText(res);
         console.log(outputText);
-        // console.log(res.rows);
-
         endConnection();
       }
     });
