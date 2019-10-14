@@ -137,6 +137,32 @@ client.connect((err) => {
                 };
             });
             break;
+/*=================================
+╔═╗┌─┐┬─┐┌┬┐
+╚═╗│ │├┬┘ │
+╚═╝└─┘┴└─ ┴
+=================================*/
+        case "sort":
+            switch (value2) {
+                case "time":
+                    queryText = (value3 === "descending") ? 'SELECT * FROM workouts ORDER BY time DESC' : 'SELECT * FROM workouts ORDER BY time';
+                    break;
+                case "distance":
+                    queryText = (value3 === "descending") ? 'SELECT * FROM workouts ORDER BY distance DESC' : 'SELECT * FROM workouts ORDER BY distance';
+                    break;
+                default:
+                    console.log("unknown sort parameter");
+            };
+            client.query(queryText, (err, res) => {
+                if (err) {
+                    console.log("query error", err.message);
+                } else {
+                    res.rows.forEach(workout=>{
+                        console.log(`${workout.id}. [${workout.time === null ? " " : "X"}] - ${workout.distance}km - ${workout.name}${workout.time === null ? "" : " - "+workout.time+"m"}`);
+                    });
+                };
+            });
+            break;
         default:
             console.log("command error");
     };
