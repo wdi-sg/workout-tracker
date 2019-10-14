@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/nathanaeltan/workout-tracker#readme",
   "dependencies": {
+    "dateformat": "^3.0.3",
     "pg": "^7.12.1"
   }
 }

@@ -1,4 +1,5 @@
 const pg = require("pg");
+const dateFormat = require('dateformat');
 const configs = {
   user: "nathanaeltan",
   host: "127.0.0.1",
@@ -11,7 +12,6 @@ const client = new pg.Client(configs);
 
 const whenQueryDone = (err, result) => {
     
-    // let avgTime = results.row
    let display = result.rows.map(obj => {
        let box;
        if(obj.completed === null){
@@ -19,7 +19,7 @@ const whenQueryDone = (err, result) => {
        } else if (obj.completed === true) {
            box = "[X]"
        }
-       let paceUnit = "m/ km"
+       let paceUnit = " m/km"
        let dash = "-"
        let time;
        let pace 
@@ -29,19 +29,15 @@ const whenQueryDone = (err, result) => {
            paceUnit=""
            dash = ""
        } else {
-           time = obj.time
-           pace=Math.round(obj["avgspeed"])
-           
+           time = `- ${obj.time} mins -`
+           pace=Math.round(obj["avgspeed"])   
        }
-   
-       
-
-       return `${obj["id"]}. ${box} - ${obj.distance}km - ${obj.name} ${dash} ${time} ${dash} ${pace}${paceUnit}`
+       return `${obj["id"]}. ${box} - ${obj.distance}km - ${obj.name} ${time} ${pace}${paceUnit}`
 
        
    })
 //   console.log("results: ", result.rows);
-  console.log(display.join("\n"))
+  console.log("\n" + "********** WORKOUTS ********** \n\n" +  display.join("\n"))
 };
 
 const whenConnected = err => {
@@ -53,10 +49,10 @@ const whenConnected = err => {
   if (command === "add") {
     let distance = process.argv[3];
     let name = process.argv[4];
-
-    let inputValues = [distance, name];
+    const now = new Date()
+    let inputValues = [distance, name, dateFormat()];
     const text =
-      "INSERT INTO workouts (distance, name) VALUES ($1, $2)";
+      "INSERT INTO workouts (distance, name, dateadded) VALUES ($1, $2, $3)";
 
     console.log("MY QUERYYYY: " + text);
     client.query(text, inputValues, whenQueryDone);
@@ -65,8 +61,10 @@ const whenConnected = err => {
   } else if(command === "complete"){
     let id = process.argv[3];
     let time = process.argv[4];
-    let inputValues = [id, time]
+    let inputValues = [id, time];
+    
     const text = "UPDATE workouts SET completed='true', time=$2, avgspeed=$2/distance WHERE id=$1 RETURNING *"
+  
 
     console.log("MY QUERYYYY: " + text);
     client.query(text, inputValues, whenQueryDone);
