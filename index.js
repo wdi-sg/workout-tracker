@@ -38,6 +38,26 @@ const viewLoop = (result) =>{
     }
 }
 
+const averageFunc = (unit, argument) =>{
+    let queryText = `SELECT ${argument} FROM workout`;
+    client.query(queryText, (err,result)=>{
+        if(err){
+            console.log("query error average function", err.message);
+        } else {
+            let total = 0;
+            let num = 0
+            for(var i = 0; i < result.rows.length; i++){
+                if(result.rows[i][`${argument}`] !== null){
+                    num++;
+                    total += parseInt(result.rows[i][`${argument}`]);
+                }
+            }
+            let average = total / num;
+            console.log(`Average ${argument}: ${average} ${unit}`);
+        }
+    })
+}
+
 //When client connects, do whatever.
 client.connect((err)=>{
     //Shows error message if there is any
@@ -119,9 +139,17 @@ client.connect((err)=>{
                     })
                 }
             })
-
             // client.query()
             // let queryText = `UPDATE workout SET completion=[x] time=${time}`
+        }
+    } else if (action === "average"){
+        let argument = process.argv[3];
+        if (argument === undefined){
+            console.log("Please key in the following format: average pace/distance");
+        } else if(argument === "distance"){
+            averageFunc("km", argument)
+        } else if(argument === "pace"){
+            averageFunc("mins/km", argument)
         }
     }
 
