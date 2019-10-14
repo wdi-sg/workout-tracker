@@ -20,16 +20,13 @@ const endConnection = () => {
 let command = process.argv[2];
 let value2 = process.argv[3];
 let value3 = process.argv[4];
-console.log(command);
-console.log(value2);
-console.log(value3);
 client.connect((err) => {
     if (err) console.log("CONNECT=",err.message);
     switch (command) {
 /*=================================
-╔═╗┌─┐┬  ┌─┐┌─┐┌┬┐
-╚═╗├┤ │  ├┤ │   │
-╚═╝└─┘┴─┘└─┘└─┘ ┴
+╔═╗┌─┐┬  ┌─┐┌─┐┌┬┐  ╔═╗┬  ┬
+╚═╗├┤ │  ├┤ │   │   ╠═╣│  │
+╚═╝└─┘┴─┘└─┘└─┘ ┴   ╩ ╩┴─┘┴─┘
 =================================*/
         case "select":
             queryText = 'SELECT * FROM workouts';
@@ -37,7 +34,9 @@ client.connect((err) => {
                 if (err) {
                     console.log("QUERY=", err.message);
                 } else {
-                    console.log("RESULT=", res.rows);
+                    res.rows.forEach(workout=>{
+                        console.log(`${workout.id}. [${workout.time === null ? " " : "X"}] - ${workout.distance}km - ${workout.name}${workout.time === null ? "" : " - "+workout.time+"m"}`);
+                    });
                 };
             });
             break;
@@ -52,7 +51,7 @@ client.connect((err) => {
                 if (err) {
                     console.log("QUERY=", err.message);
                 } else {
-                    console.log("RESULT=", res.rows[0]);
+                    console.log("result", res.rows[0]);
                 };
             });
             break;
@@ -82,25 +81,59 @@ client.connect((err) => {
                 if (err) {
                     console.log("query error", err.message);
                 } else {
-                    console.log("result", res.rows[0]);
+                    console.log("DELETED");
                 };
             });
             break;
 /*=================================
-╦ ╦┌┐┌┌┬┐┌─┐┌─┐┬┌┐┌┌─┐┌┬┐
-║ ║│││ ││├┤ ├┤ ││││├┤  ││
-╚═╝┘└┘─┴┘└─┘└  ┴┘└┘└─┘─┴┘
+╔═╗┌─┐┌─┐┌─┐
+╠═╝├─┤│  ├┤
+╩  ┴ ┴└─┘└─┘
 =================================*/
-        case undefined:
+        case "pace":
             queryText = 'SELECT * FROM workouts ORDER BY id';
             client.query(queryText, (err, res) => {
                 if (err) {
                     console.log("query error", err.message);
                 } else {
-                    console.log("result", res.rows);
                     res.rows.forEach(workout=>{
                         workout.time === null ? "" : console.log(`${workout.id}. [X] - ${workout.distance}km - ${workout.time}m - ${(workout.time/workout.distance).toFixed(2)}m/km`);
                     });
+                };
+            });
+            break;
+/*=================================
+╔═╗┬  ┬┌─┐┬─┐┌─┐┌─┐┌─┐  ╔╦╗┬┌┬┐┌─┐
+╠═╣└┐┌┘├┤ ├┬┘├─┤│ ┬├┤    ║ ││││├┤
+╩ ╩ └┘ └─┘┴└─┴ ┴└─┘└─┘   ╩ ┴┴ ┴└─┘
+=================================*/
+        case "average time":
+            queryText = 'SELECT * FROM workouts ORDER BY id';
+            client.query(queryText, (err, res) => {
+                if (err) {
+                    console.log("query error", err.message);
+                } else {
+                    let arrayOfCompleted = res.rows.filter(workout=>workout.time !== null);
+                    let arrayTimeCompleted = arrayOfCompleted.map(workout=>workout.time);
+                    console.log((arrayTimeCompleted.reduce((a,b) => a + b)/arrayTimeCompleted.length).toFixed(2)+'m');
+                };
+            });
+            break;
+/*=================================
+╔═╗┬  ┬┌─┐┬─┐┌─┐┌─┐┌─┐  ╔╦╗┬┌─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐
+╠═╣└┐┌┘├┤ ├┬┘├─┤│ ┬├┤    ║║│└─┐ │ ├─┤││││  ├┤
+╩ ╩ └┘ └─┘┴└─┴ ┴└─┘└─┘  ═╩╝┴└─┘ ┴ ┴ ┴┘└┘└─┘└─┘
+=================================*/
+        case "average distance":
+            queryText = 'SELECT * FROM workouts ORDER BY id';
+            client.query(queryText, (err, res) => {
+                if (err) {
+                    console.log("query error", err.message);
+                } else {
+                    console.log(res.rows)
+                    let arrayOfCompleted = res.rows.filter(workout=>workout.time !== null);
+                    let arrayDistanceCompleted = arrayOfCompleted.map(workout=>workout.distance);
+                    console.log((arrayDistanceCompleted.reduce((a,b) => a + b)/arrayDistanceCompleted.length).toFixed(2)+'km');
                 };
             });
             break;
