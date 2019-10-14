@@ -109,6 +109,12 @@ $ node index.js average '2/3/2019' '1/5/2019'
 You may want to look ahead in the gitbook for how to work with sql dummy data, a `seed.sql` file: [https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html](https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html)
 
 #### Further
+Add the ability to get a list of completed runs ordered by time (ascending and descending)
+
+#### Further
+Add the ability to get a list of completed runs ordered by time (ascending and descending) **for a given time period**
+
+#### Further
 Add a column named `created_at` with data type date and display the date the item was added. Look ahead in the gitbook for how to format the date type with `pg` library [https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html](https://wdi-sg.github.io/gitbook-2019/04-databases/postgres/sql-working.html)
 
 #### Further
