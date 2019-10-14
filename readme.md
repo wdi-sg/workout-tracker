@@ -28,9 +28,9 @@ $ node index.js
 
 ```
 
-1. [ ] - 5.7km
-2. [ ] - 6.8km
-3. [ ] - 9.2km
+1. [ ] - 5.7km - easy run
+2. [ ] - 6.8km - up a mountain
+3. [ ] - 9.2km - banana
 ```
 
 #### Further
@@ -68,6 +68,7 @@ $ node index.js
 3. [x] - 9.2km - 4:00
 ```
 
+###### (Complete any of the below furthers in any order)
 
 #### Further
 
