@@ -17,6 +17,7 @@ let inputName = process.argv[4];
 let inputTime = process.argv[5];
 let outputTime = "";
 
+console.log('Commands: index.js (shows all), add distance name time, number done, number delete')
 
 const endConnection = ()=>{
 	client.end(err => {
@@ -91,13 +92,38 @@ const addData = function () {
 
 // done needs a time to update
 const doneData = function () {
-	console.log('done entered')
+	// console.log('done entered')
 	client.connect((err) => {
 
 	if( err ){
 		console.log( "error", err.message );
 	}
 	let queryText = "UPDATE workout SET time="+process.argv[4]+" WHERE id ="+process.argv[3];
+
+	client.query(queryText, (err, res) => {
+	    if (err) {
+	      console.log("query error", err.message);
+	    } else {
+	      console.log("done!");
+	    }
+	    endConnection();
+	});
+
+	});
+
+}
+
+
+// done needs a time to update
+// DELETE from students WHERE name = 'Mary';
+const deleteData = function () {
+	// console.log('delete entered')
+	client.connect((err) => {
+
+	if( err ){
+		console.log( "error", err.message );
+	}
+	let queryText = "DELETE from workout WHERE id ="+process.argv[3];
 
 	client.query(queryText, (err, res) => {
 	    if (err) {
@@ -126,7 +152,7 @@ const doneData = function () {
 		// showData(obj);
 	    break;
 	  case 'delete':
-		// deleteData(obj);
+		deleteData();
 		// showData(obj);
 	    break;
 	   default: 
