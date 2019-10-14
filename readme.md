@@ -74,8 +74,8 @@ $ node index.js
 
 (these are listed in minute per km pace)
 ```
-1. [ ] - 5.7km - 12:00 - 4:30 m /km
-2. [ ] - 6.8km - 13:00 - 3:20 m / km
+1. [ ] - 5.7km - 12:00
+2. [ ] - 6.8km - 13:00
 3. [x] - 9.2km - 4:00  - 10:00 m / km
 ```
 
