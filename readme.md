@@ -33,13 +33,7 @@ $ node index.js
 3. [ ] - 9.2km - banana
 ```
 
-#### Further
 
-Mark your workouts completed.
-
-```bash
-$ node index.js complete 1
-```
 
 #### Further
 
