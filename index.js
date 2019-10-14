@@ -28,6 +28,29 @@ client.connect((err)=>{
     }
 
     let action = process.argv[2];
-    console.log(action);
+    if(action === undefined){
+        console.log("Choose: add, view");
+    }
+    console.log("Selected action: "+action);
+
+    if(action === "add"){
+        let title = process.argv[3];
+        let distance = process.argv[4];
+        let completetion = '[ ]';
+        let arr = [title,distance,completetion];
+        let queryText = `INSERT INTO workout (title,distance,completetion) VALUES ($1,$2,$3) RETURNING *`;
+        if(title === undefined){
+            console.log("Please key in the following format: add title distance");
+        } else {
+            client.query(queryText, arr, (err, result)=>{
+                if (err) {
+                    console.log("query error", err.message);
+                } else {
+                    console.log("New to do added: ", result.rows);
+                }
+            })
+        }
+    }
+
     endConnection();
 });
