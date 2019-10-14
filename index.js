@@ -28,12 +28,12 @@ const viewLoop = (result) =>{
         let distance = obj["distance"] + " km";
         let title = obj["title"];
         let time = obj["time"];
-        let completetion = obj["completetion"];
+        let completion = obj["completion"];
         let pace = obj["pace"];
-        if(completetion === "[ ]"){
-            console.log(`${id}. ${title} - ${completetion} - ${distance}`)
+        if(completion === "[ ]"){
+            console.log(`${id}. ${title} - ${completion} - ${distance}`)
         } else {
-            console.log(`${id}. ${title} - ${completetion} - ${distance} - ${time} - ${pace}`)
+            console.log(`${id}. ${title} - ${completion} - ${distance} - ${time} - ${pace}`)
         }
     }
 }
@@ -55,9 +55,9 @@ client.connect((err)=>{
     if(action === "add"){
         let title = process.argv[3];
         let distance = process.argv[4];
-        let completetion = '[ ]';
-        let arr = [title,distance,completetion];
-        let queryText = `INSERT INTO workout (title,distance,completetion) VALUES ($1,$2,$3) RETURNING *`;
+        let completion = '[ ]';
+        let arr = [title,distance,completion];
+        let queryText = `INSERT INTO workout (title,distance,completion) VALUES ($1,$2,$3) RETURNING *`;
         if(title === undefined){
             console.log("Please key in the following format: add title distance");
         } else {
@@ -95,10 +95,33 @@ client.connect((err)=>{
     } else if (action === "complete"){
         let id = process.argv[3];
         let time = process.argv[4];
+        let pace;
         if(id === undefined || time === undefined){
             console.log("Please key in the following format: complete id-number time");
         } else {
+            let queryText = `SELECT distance FROM workout where id = ${id}`;
+            client.query(queryText, (err,result)=>{
+                if (err) {
+                    console.log("query error view 2", err.message);
+                } else {
+                    distance = result.rows[0]["distance"]
+                    console.log("Time: ", time)
+                    pace = time / distance;
+                    let completion = '[x]';
+                    let arr = [completion,time,pace,id];
+                    let queryText2 = `UPDATE workout SET completion=$1, time=$2, pace=$3 WHERE id=$4 RETURNING *`;
+                    client.query(queryText2, arr, (err,result)=>{
+                        if (err) {
+                            console.log("query error view 3", err.message);
+                        } else {
+                            console.log(result.rows);
+                        }
+                    })
+                }
+            })
 
+            // client.query()
+            // let queryText = `UPDATE workout SET completion=[x] time=${time}`
         }
     }
 
