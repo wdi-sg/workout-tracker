@@ -67,7 +67,7 @@ client.connect((err)=>{
 
     let action = process.argv[2];
     if(action === undefined){
-        console.log("Choose: add, view, complete");
+        console.log("Choose: add, view, complete, average, sort");
     }
     console.log("Selected action: "+action);
 
@@ -85,7 +85,11 @@ client.connect((err)=>{
                 if (err) {
                     console.log("query error", err.message);
                 } else {
-                    console.log("New to do added: ", result.rows);
+                    let res = result.rows[0];
+                    let title = res.title;
+                    let distance = res.distance;
+                    let id = res.id;
+                    console.log(`New to do added: ${id}. ${title} - ${distance} km`);
                 }
             })
         }
@@ -163,6 +167,24 @@ client.connect((err)=>{
                     console.log("query error view 3", err.message);
                 } else {
                     viewLoop(result);
+                }
+            })
+        }
+    } else if (action === "delete"){
+        let id = process.argv[3];
+        let queryText = `DELETE FROM workout where id=${id}`;
+        if (id === undefined){
+            console.log("Please key in the following format: delete id-number");
+        } else {
+            client.query(queryText, (err,result)=>{
+                if (err) {
+                    console.log("query error view 3", err.message);
+                } else {
+                    if(result.rowCount === 0){
+                        console.log(`Id ${id} does not exist!`);
+                    } else {
+                        console.log(`Id ${id} has been deleted!`);
+                    }
                 }
             })
         }
