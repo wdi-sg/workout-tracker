@@ -48,7 +48,7 @@ const getOutputText = res => {
       } else {
         minutes = +workouts[i].time;
         seconds = 0;
-        pace = (minutes / distance).toFixed(2); 
+        pace = (minutes / distance).toFixed(2);
       }
       outputTime = ` - ${+minutes <= 9 ? "0" + minutes : minutes}:${
         +seconds <= 9 ? "0" + seconds : seconds
@@ -71,7 +71,7 @@ client.connect(err => {
   }
 
   // when there are 2 inputs, e.g. node index 3.3 "run"
-  if (input1 && input2 && !input3) {
+  if (input1 && input2 && input1 !== "average") {
     const values = [input1, input2];
 
     const queryText =
@@ -122,6 +122,28 @@ client.connect(err => {
       }
     });
     // when there are is no input, e.g. node index
+  } else if (input1 === "average") {
+    let queryText = "";
+    if (input2 === "distance") {
+      queryText =
+        "SELECT to_char(AVG (distance), '9999D99') AS average FROM workouts WHERE time IS NOT NULL";
+    } else if (input2 === "time") {
+    queryText =
+    "SELECT to_char(AVG (time), '9999D99') AS average FROM workouts WHERE time IS NOT NULL";
+    } else {
+      console.log("Please enter either: average distance OR average time");
+      endConnection();
+    }
+
+    client.query(queryText, (err, res) => {
+      if (err) {
+        console.log("query error", err.message);
+        endConnection();
+      } else {
+        console.log(`Average ${input2}: ${res.rows[0].average} ${input2 === "distance" ? "km" : "min"}`);
+        endConnection();
+      }
+    });
   } else {
     const queryText = "SELECT * FROM workouts ORDER BY id";
 
