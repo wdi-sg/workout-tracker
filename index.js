@@ -53,6 +53,7 @@ client.connect((err) => {
                 console.log("query error", err.message);
             } else {
                 let obj = res.rows;
+
                 obj.forEach(run => {
                     let pace = parseInt(run.time) / parseInt(run.distance);
 
