@@ -52,10 +52,10 @@ $ node index.js complete 1 24.5
 ```
 | id  | distance | name       | time  |
 | --- | --------:| ---------: |:-----:|
-|  1  |  2       | easy       | 3     |
+|  1  |  2       | easy       | 12    |
 |  2  |  2       | hard       | 5     |
 |  3  |  20      | distance   | 6     |
-|  3  |  20      | distance   | 12    |
+|  3  |  20      | distance   |       |
 ```
 
 ```bash
@@ -68,7 +68,6 @@ $ node index.js
 3. [x] - 9.2km - 4:00
 ```
 
-Note that you should change your table to allow for "completion" of an item. Maybe a `boolean` column?
 
 #### Further
 
