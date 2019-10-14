@@ -42,6 +42,8 @@ client.connect((err) => {
             if (err) {
                 console.log("query error", err.message);
             } else {
+                let obj = res.rows
+                obj.forEach
                 console.log(res.rows)
             }
         });
