@@ -27,11 +27,15 @@ client.connect((err) => {
             break;
 
             case "show":
-           showWorkout()
+           showWorkout();
             break;
 
             case "complete":
-            completeWorkout()
+            completeWorkout();
+            break;
+
+            case "delete":
+            deleteWorkout();
       }
 })
 
@@ -48,7 +52,6 @@ function addWorkout() {
                     console.log("added workout: ", `${res.rows[0].id}. ${res.rows[0].complete} - ${res.rows[0].distance}km - ${res.rows[0].name}`);
             }
         })
-
 }
 
 function showWorkout(){
@@ -66,7 +69,6 @@ function showWorkout(){
             }
           }
         });
-
 }
 
 function completeWorkout(){
@@ -78,6 +80,19 @@ function completeWorkout(){
                   // iterate through all of your results:
 
                     console.log("completed workout: ", `${res.rows[0].id}. ${res.rows[0].complete} - ${res.rows[0].distance}km - ${res.rows[0].name} - ${res.rows[0].time}`);
+            };
+        })
+}
+
+function deleteWorkout(){
+queryText = `DELETE from workouts WHERE id = ${process.argv[3]}`
+        client.query(queryText, (err,res)=>{
+            if (err){
+                console.log("query error", err.message);
+                } else {
+                  // iterate through all of your results:
+
+                    console.log("DELETED WORKOUT: " + process.argv[3]);
             };
         })
 }
