@@ -16,6 +16,7 @@ let inputDistance = process.argv[3];
 let inputName = process.argv[4];
 let inputTime = process.argv[5];
 let outputTime = "";
+let orderBy = "";
 
 console.log('Commands: index.js (shows all), add distance name time, number done, number delete, sort a (ascending by run time) d (descending)')
 
@@ -38,7 +39,7 @@ console.log("No.    Distance   Name        Time");
 		if( err ){
 			console.log( "error", err.message );
 		}
-		let queryText = 'SELECT * FROM workout';
+		let queryText = 'SELECT * FROM workout'+ orderBy;
 
 		client.query(queryText, (err, res) => {
 			if (err) {
@@ -140,6 +141,12 @@ const deleteData = function () {
 
 const sortData = function () {
 	console.log("sort data start!");
+	if (process.argv[3] === 'a') {
+		orderBy= ' ORDER BY time ASC';
+		} else {
+		orderBy= ' ORDER BY time DESC';
+		}
+		showData();
 	}
 
 	switch(actionType) {
