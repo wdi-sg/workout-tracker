@@ -58,13 +58,13 @@ function showWorkout(){
  queryText = 'SELECT * FROM workouts ORDER BY id ASC';
         client.query(queryText, (err,res)=>{
            if (err) {
-          console.log("query error", err.message);
+            console.log("query error", err.message);
         } else {
             for (let i=0; i<res.rows.length; i++){
                 if (res.rows[i].time === null){
                     console.log(`${res.rows[i].id}.`, `${res.rows[i].complete} - `, `${res.rows[i].distance}km - `, res.rows[i].name);
                 } else {
-                    console.log(`${res.rows[i].id}. ${res.rows[i].complete} - ${res.rows[i].distance}km - ${res.rows[i].name} - completed in ${res.rows[i].time} minutes`);
+                    console.log(`${res.rows[i].id}. ${res.rows[i].complete} - ${res.rows[i].distance}km - ${res.rows[i].name} - completed in ${res.rows[i].time} minutes - at a pace of ${res.rows[i].pace}minutes/km`);
                 }
             }
           }
@@ -72,16 +72,33 @@ function showWorkout(){
 }
 
 function completeWorkout(){
-     queryText = `UPDATE workouts SET complete = '[x]', time = '${process.argv[4]}' WHERE id = ${process.argv[3]} RETURNING *`
+
+    queryText = `SELECT * FROM workouts WHERE id = ${process.argv[3]}`;
+
         client.query(queryText, (err,res)=>{
             if (err){
                 console.log("query error", err.message);
-                } else {
-                  // iterate through all of your results:
+            } else {
+            let time = process.argv[4]
+            let pace = parseInt(res.rows[0].distance)/parseFloat(time)
 
-                    console.log("completed workout: ", `${res.rows[0].id}. ${res.rows[0].complete} - ${res.rows[0].distance}km - ${res.rows[0].name} - ${res.rows[0].time}`);
+
+
+             queryText = `UPDATE workouts SET complete = '[x]', time = '${process.argv[4]}', pace = '${pace}' WHERE id = ${process.argv[3]} RETURNING *`
+             client.query(queryText, (err,res)=>{
+            if (err){
+                console.log("query error", err.message);
+                } else {
+                    console.log("completed workout: ", `${res.rows[0].id}. ${res.rows[0].complete} - ${res.rows[0].distance}km - ${res.rows[0].name} - ${res.rows[0].time} - ${res.rows[0].pace}minutes/km`);
             };
         })
+
+            }
+        })
+
+
+
+
 }
 
 function deleteWorkout(){
