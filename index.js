@@ -151,6 +151,21 @@ client.connect((err)=>{
         } else if(argument === "pace"){
             averageFunc("mins/km", argument)
         }
+    } else if (action === "sort"){
+        let sortBy = process.argv[3];
+        let argument = process.argv[4];
+        if (sortBy === undefined){
+            console.log("Please key in the following format: sort ASC/DESC distance/time/pace");
+        } else if (sortBy === "ASC" || sortBy === "DESC") {
+            let queryText= `SELECT * FROM workout ORDER BY ${argument} ${sortBy}`;
+            client.query(queryText, (err, result)=>{
+                if (err) {
+                    console.log("query error view 3", err.message);
+                } else {
+                    viewLoop(result);
+                }
+            })
+        }
     }
 
 
