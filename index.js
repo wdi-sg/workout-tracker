@@ -15,6 +15,7 @@ let actionType = process.argv[2];
 let inputDistance = process.argv[3];
 let inputName = process.argv[4];
 let inputTime = process.argv[5];
+let outputTime = "";
 
 
 const endConnection = ()=>{
@@ -29,6 +30,8 @@ const endConnection = ()=>{
 
 
 const showData = function () {
+console.log("No.    Distance   Name        Time");
+
 	client.connect((err) => {
 
 		if( err ){
@@ -42,7 +45,18 @@ const showData = function () {
 			} else {
 			// iterate through all of your results:
 				for( let i=0; i<res.rows.length; i++ ){
-					console.log("result: ", res.rows[i]);
+					// console.log("result: ", res.rows[i]);
+					let displayNumber = i+1;
+					let done = " ";
+					if (res.rows[i].time > 0 ) {
+						done = "x";
+						outputTime = res.rows[i].time;
+					} else {
+						outputTime = "";
+					}
+
+					console.log(displayNumber +'.  ['+done+'] - ' + res.rows[i].distance + '    ' + res.rows[i].name + '       ' + outputTime );
+
 				}
 			}
 			endConnection();
@@ -76,6 +90,11 @@ const addData = function () {
 }
 
 
+const doneData = function () {
+	console.log('done entered')
+}
+
+
 	switch(actionType) {
 	  case 'show':
 		showData();
@@ -85,7 +104,7 @@ const addData = function () {
 	  	addData();
 	    break;
 	  case 'done':
-		// doneData(obj);
+		doneData();
 		// showData(obj);
 	    break;
 	  case 'delete':
