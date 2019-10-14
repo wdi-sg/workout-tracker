@@ -30,10 +30,11 @@ const viewLoop = (result) =>{
         let time = obj["time"];
         let completion = obj["completion"];
         let pace = obj["pace"];
+        let activity = obj["activity"];
         if(completion === "[ ]"){
-            console.log(`${id}. ${title} - ${completion} - ${distance}`)
+            console.log(`${id}. ${title} - ${completion} - ${distance} - ${activity}`)
         } else {
-            console.log(`${id}. ${title} - ${completion} - ${distance} - ${time} min - ${pace} min/km`)
+            console.log(`${id}. ${title} - ${completion} - ${distance} - ${activity} - ${time} min - ${pace} min/km`)
         }
     }
 }
@@ -75,11 +76,12 @@ client.connect((err)=>{
     if(action === "add"){
         let title = process.argv[3];
         let distance = process.argv[4];
+        let activity = process.argv[5]
         let completion = '[ ]';
-        let arr = [title,distance,completion];
-        let queryText = `INSERT INTO workout (title,distance,completion) VALUES ($1,$2,$3) RETURNING *`;
+        let arr = [title,distance,completion,activity];
+        let queryText = `INSERT INTO workout (title,distance,completion,activity) VALUES ($1,$2,$3,$4) RETURNING *`;
         if(title === undefined){
-            console.log("Please key in the following format: add title distance");
+            console.log("Please key in the following format: add title distance activity");
         } else {
             client.query(queryText, arr, (err, result)=>{
                 if (err) {
@@ -89,14 +91,15 @@ client.connect((err)=>{
                     let title = res.title;
                     let distance = res.distance;
                     let id = res.id;
-                    console.log(`New to do added: ${id}. ${title} - ${distance} km`);
+                    let activity = res.activity
+                    console.log(`New to do added: ${id}. ${title} - ${distance} km - ${activity}`);
                 }
             })
         }
     } else if (action === "view"){
         let selection = process.argv[3];
         if(selection === undefined){
-            console.log("Please key in the following format: view all/id-number")
+            console.log("Please key in the following format: view all/id-number/by activity(Only for by")
         } else if (selection === "all"){
             let queryText = "SELECT * FROM workout";
             client.query(queryText, (err, result)=>{
@@ -106,6 +109,16 @@ client.connect((err)=>{
                     viewLoop(result);
                 }
             });
+        } else if (selection === "by") {
+            let activity = process.argv[4];
+            let queryText = `SELECT * FROM workout where "activity" = '${activity}'`;
+            client.query(queryText, (err, result)=>{
+                if (err) {
+                    console.log("query error view 2", err.message);
+                } else {
+                    viewLoop(result);
+                }
+            })
         } else {
             let queryText = `SELECT * FROM workout where id = ${selection}`
             client.query(queryText, (err, result)=>{
