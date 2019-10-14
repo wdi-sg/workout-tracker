@@ -9,7 +9,18 @@ const configs = {
 const client = new pg.Client(configs);
 
 const whenQueryDone = (err, result) => {
-  console.log("results: ", result.rows);
+    
+   let display = result.rows.map(obj => {
+       let box;
+       if(obj.completed === null){
+           box = '[]'
+       } else if (obj.completed === true) {
+           box = "[X]"
+       }
+       return `${obj["id"]}. ${box} - ${obj.distance}km - ${obj.name}`
+   })
+//   console.log("results: ", result.rows);
+  console.log(display.join("\n"))
 };
 
 const whenConnected = err => {
@@ -27,6 +38,12 @@ const whenConnected = err => {
 
     console.log("MY QUERYYYY: " + text);
     client.query(text, inputValues, whenQueryDone);
+  } else {
+    const text =
+      "SELECT * FROM workouts;";
+
+    console.log("MY QUERYYYY: " + text);
+    client.query(text, whenQueryDone);
   }
 };
 
