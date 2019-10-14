@@ -17,7 +17,14 @@ const whenQueryDone = (err, result) => {
        } else if (obj.completed === true) {
            box = "[X]"
        }
-       return `${obj["id"]}. ${box} - ${obj.distance}km - ${obj.name}`
+
+       let time;
+       if(obj.time === null) {
+           time = ""
+       } else {
+           time = obj.time
+       }
+       return `${obj["id"]}. ${box} - ${obj.distance}km - ${obj.name} - ${time}`
    })
 //   console.log("results: ", result.rows);
   console.log(display.join("\n"))
@@ -38,6 +45,15 @@ const whenConnected = err => {
 
     console.log("MY QUERYYYY: " + text);
     client.query(text, inputValues, whenQueryDone);
+  } else if(command === "complete"){
+    let id = process.argv[3];
+    let time = process.argv[4];
+    let inputValues = [id, time]
+    const text = "UPDATE workouts SET completed='true', time=$2 WHERE id =$1"
+
+    console.log("MY QUERYYYY: " + text);
+    client.query(text, inputValues, whenQueryDone);
+
   } else {
     const text =
       "SELECT * FROM workouts;";
