@@ -33,7 +33,7 @@ const viewLoop = (result) =>{
         if(completion === "[ ]"){
             console.log(`${id}. ${title} - ${completion} - ${distance}`)
         } else {
-            console.log(`${id}. ${title} - ${completion} - ${distance} - ${time} - ${pace}`)
+            console.log(`${id}. ${title} - ${completion} - ${distance} - ${time} min - ${pace} min/km`)
         }
     }
 }
@@ -130,7 +130,7 @@ client.connect((err)=>{
                 } else {
                     distance = result.rows[0]["distance"]
                     console.log("Time: ", time)
-                    pace = time / distance;
+                    pace = time / distance ;
                     let completion = '[x]';
                     let arr = [completion,time,pace,id];
                     let queryText2 = `UPDATE workout SET completion=$1, time=$2, pace=$3 WHERE id=$4 RETURNING *`;
@@ -138,13 +138,11 @@ client.connect((err)=>{
                         if (err) {
                             console.log("query error view 3", err.message);
                         } else {
-                            console.log(result.rows);
+                            viewLoop(result);
                         }
                     })
                 }
             })
-            // client.query()
-            // let queryText = `UPDATE workout SET completion=[x] time=${time}`
         }
     } else if (action === "average"){
         let argument = process.argv[3];
@@ -158,7 +156,7 @@ client.connect((err)=>{
     } else if (action === "sort"){
         let sortBy = process.argv[3];
         let argument = process.argv[4];
-        if (sortBy === undefined){
+        if (sortBy === undefined || argument === undefined){
             console.log("Please key in the following format: sort ASC/DESC distance/time/pace");
         } else if (sortBy === "ASC" || sortBy === "DESC") {
             let queryText= `SELECT * FROM workout ORDER BY ${argument} ${sortBy}`;
@@ -188,6 +186,29 @@ client.connect((err)=>{
                 }
             })
         }
+    } else if (action === "find"){
+        let argument = process.argv[3];
+        let by = process.argv[4];
+        let value = parseInt(process.argv[5]);
+        // let arr = [argument, compare, value];
+        let queryText;
+        if(by === "above"){
+            queryText = `SELECT * FROM workout WHERE ${argument} > ${value}`;
+        } else if (by === "below"){
+            queryText = `SELECT * FROM workout WHERE ${argument} < ${value}`;
+        }
+
+        if (argument === undefined || by === undefined || value === undefined){
+            console.log("Please key in the following format: find pace/time/distance above/below integer");
+        } else {
+            console.log("Else")
+            console.log(queryText)
+            client.query(queryText,(err,result)=>{
+                viewLoop(result);
+            })
+        }
+
+
     }
 
 
