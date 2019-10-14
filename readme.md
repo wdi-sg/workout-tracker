@@ -1,5 +1,7 @@
 # Workout Tracker
 
+![https://media.giphy.com/media/SdW7SEleK00Ug/source.gif](https://media.giphy.com/media/SdW7SEleK00Ug/source.gif)
+
 Create an app that tracks your workouts.
 
 ##### Create a table
