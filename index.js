@@ -48,22 +48,24 @@ client.connect(err => {
         });
 
         // help!!!
-        // } else if (process.argv[2] === "completed") {
-        //     let workouts = "SELECT * FROM workouts";
-        //     let workoutId = process.argv[3];
-        //     let workoutTime = process.argv[4];
-        //     let text = `UPDATE workouts SET time = ${workoutTime} WHERE id = ${workoutId}`;
-        //     client.query(text, (err, res) => {
-        //         if (err) {
-        //             console.log("query error", err.message);
-        //         } else {
-        //             console.log(`${workouts}.res.row[workoutId].distance}`)
-        //             // console.log(`${workoutId}. [X] - ${workouts.rows.distance} - ${workouts.level} - ${workouts.time}`);
-        //         }
-        //     });
-        // }
-
+    } else if (process.argv[2] === "completed") {
+        let workouts = "SELECT * FROM workouts";
+        let workoutId = process.argv[3];
+        let workoutTime = process.argv[4];
+        let text = `UPDATE workouts SET time = ${workoutTime} WHERE id = ${workoutId} RETURNING *`;
+        client.query(text, (err, res) => {
+            if (err) {
+                console.log("query error", err.message);
+            } else {
+                // res.rows[0]refers to first object within your table!!
+                let completedWorkout = res.rows[0];
+                // console.log(`${workouts}.res.row[workoutId].distance}`)
+                // the thing inside ${} is a variable!!!
+                console.log(`${completedWorkout.id}. [X] - ${completedWorkout.distance} - ${completedWorkout.level} - ${completedWorkout.time}`);
+            }
+        });
     }
+
 });
 
 // to show all logged workouts
