@@ -68,9 +68,10 @@ client.connect((err)=>{
 
     let action = process.argv[2];
     if(action === undefined){
-        console.log("Choose: add, view, complete, average, sort");
+        console.log("Choose: add, view, complete, average, sort, delete, find");
+        endConnection();
     }
-    console.log("Selected action: "+action);
+    console.log("Selected action: " + action);
 
     //If action is add, insert basic informations.
     if(action === "add"){
@@ -82,10 +83,12 @@ client.connect((err)=>{
         let queryText = `INSERT INTO workout (title,distance,completion,activity) VALUES ($1,$2,$3,$4) RETURNING *`;
         if(title === undefined){
             console.log("Please key in the following format: add title distance activity");
+            endConnection();
         } else {
             client.query(queryText, arr, (err, result)=>{
                 if (err) {
                     console.log("query error", err.message);
+                    endConnection();
                 } else {
                     let res = result.rows[0];
                     let title = res.title;
@@ -93,20 +96,24 @@ client.connect((err)=>{
                     let id = res.id;
                     let activity = res.activity
                     console.log(`New to do added: ${id}. ${title} - ${distance} km - ${activity}`);
+                    endConnection();
                 }
             })
         }
     } else if (action === "view"){
         let selection = process.argv[3];
         if(selection === undefined){
-            console.log("Please key in the following format: view all/id-number/by activity(Only for by")
+            console.log("Please key in the following format: view all/id-number/by activity(Only for by)")
+            endConnection();
         } else if (selection === "all"){
             let queryText = "SELECT * FROM workout";
             client.query(queryText, (err, result)=>{
                 if (err) {
                     console.log("query error view", err.message);
+                    endConnection();
                 } else {
                     viewLoop(result);
+                    endConnection();
                 }
             });
         } else if (selection === "by") {
@@ -115,8 +122,10 @@ client.connect((err)=>{
             client.query(queryText, (err, result)=>{
                 if (err) {
                     console.log("query error view 2", err.message);
+                    endConnection();
                 } else {
                     viewLoop(result);
+                    endConnection();
                 }
             })
         } else {
@@ -124,9 +133,12 @@ client.connect((err)=>{
             client.query(queryText, (err, result)=>{
                 if (err) {
                     console.log("query error view 2", err.message);
+                    endConnection();
                 } else {
                     viewLoop(result);
+                    endConnection();
                 }
+
             })
         }
     } else if (action === "complete"){
@@ -135,11 +147,13 @@ client.connect((err)=>{
         let pace;
         if(id === undefined || time === undefined){
             console.log("Please key in the following format: complete id-number time");
+            endConnection();
         } else {
             let queryText = `SELECT distance FROM workout where id = ${id}`;
             client.query(queryText, (err,result)=>{
                 if (err) {
                     console.log("query error view 2", err.message);
+                    endConnection();
                 } else {
                     distance = result.rows[0]["distance"]
                     console.log("Time: ", time)
@@ -150,8 +164,10 @@ client.connect((err)=>{
                     client.query(queryText2, arr, (err,result)=>{
                         if (err) {
                             console.log("query error view 3", err.message);
+                            endConnection();
                         } else {
                             viewLoop(result);
+                            endConnection();
                         }
                     })
                 }
@@ -161,23 +177,29 @@ client.connect((err)=>{
         let argument = process.argv[3];
         if (argument === undefined){
             console.log("Please key in the following format: average pace/distance");
+            endConnection();
         } else if(argument === "distance"){
             averageFunc("km", argument)
+            endConnection();
         } else if(argument === "pace"){
             averageFunc("mins/km", argument)
+            endConnection();
         }
     } else if (action === "sort"){
         let sortBy = process.argv[3];
         let argument = process.argv[4];
         if (sortBy === undefined || argument === undefined){
             console.log("Please key in the following format: sort ASC/DESC distance/time/pace");
+            endConnection();
         } else if (sortBy === "ASC" || sortBy === "DESC") {
             let queryText= `SELECT * FROM workout ORDER BY ${argument} ${sortBy}`;
             client.query(queryText, (err, result)=>{
                 if (err) {
                     console.log("query error view 3", err.message);
+                    endConnection();
                 } else {
                     viewLoop(result);
+                    endConnection();
                 }
             })
         }
@@ -186,15 +208,19 @@ client.connect((err)=>{
         let queryText = `DELETE FROM workout where id=${id}`;
         if (id === undefined){
             console.log("Please key in the following format: delete id-number");
+            endConnection();
         } else {
             client.query(queryText, (err,result)=>{
                 if (err) {
                     console.log("query error view 3", err.message);
+                    endConnection();
                 } else {
                     if(result.rowCount === 0){
                         console.log(`Id ${id} does not exist!`);
+                        endConnection();
                     } else {
                         console.log(`Id ${id} has been deleted!`);
+                        endConnection();
                     }
                 }
             })
@@ -203,7 +229,6 @@ client.connect((err)=>{
         let argument = process.argv[3];
         let by = process.argv[4];
         let value = parseInt(process.argv[5]);
-        // let arr = [argument, compare, value];
         let queryText;
         if(by === "above"){
             queryText = `SELECT * FROM workout WHERE ${argument} > ${value}`;
@@ -213,11 +238,13 @@ client.connect((err)=>{
 
         if (argument === undefined || by === undefined || value === undefined){
             console.log("Please key in the following format: find pace/time/distance above/below integer");
+            endConnection();
         } else {
             console.log("Else")
             console.log(queryText)
             client.query(queryText,(err,result)=>{
                 viewLoop(result);
+                endConnection();
             })
         }
 
