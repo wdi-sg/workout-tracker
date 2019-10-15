@@ -11,68 +11,21 @@ const client = new pg.Client(configs);
 
 console.log("     ***** WORKOUT_TRACKER *****.     ");
 console.log("Instructions:");
-//console.log("LIST - show workouts")
 console.log("ADD      - add \'distance\' \'name\'");
 console.log("COMPLETE - complete \'id\' \'time(hhmmss)\'");
-console.log("SORT     - sort \'distance/time\' \'ASC/DESC\'")
+console.log("SORT     - sort \'distance/time\' \'ASC/DESC\'");
+console.log("DELETE   - delete \'id\'");
 console.log("---------------------------------------");
-
-const list = function() {
-    let queryText = 'SELECT * FROM workout ORDER BY id';
-
-    client.query(queryText, (err, res) => {
-        if (err) {
-            console.log("query error", err.message);
-        } else {
-            const list = res.rows.map(row => {
-                let id = row.id;
-                let distance = row.distance;
-                let name = row.name;
-                let time = row.time;
-                if (time === null) {
-                    console.log(`${id}. [ ] - ${distance}km - ${name}`);
-                } else {
-                    var hoursMinutes = time.split(/[.:]/);
-                    //console.log(hoursMinutes);
-                    let pace = ((parseInt(hoursMinutes[0] * 60) + parseInt(hoursMinutes[1])) / distance).toFixed(2);
-                    //let date = row.created_at;
-                    // let dateFormat = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
-                    console.log(`${id}. [x] - ${distance}km - ${name} - ${time} - ${pace} m/km`);
-                }
-            })
-        }
-        //endConnection();
-        // if terminate connection here,
-        // cannot continue further commands
-    });
-}
-list();
 
 const whenConnected = (err) => {
     if (err) {
         console.log("error", err.message);
     }
 
-    let action = process.argv[2]
+    let action = process.argv[2];
+    let queryText;
 
     switch (action) {
-        // case 'list':
-        //   let queryList = 'SELECT * FROM workout';
-
-        //   client.query(queryList, (err, res) => {
-        //     if (err) {
-        //       console.log("query error", err.message);
-        //     } else {
-        //         const list = res.rows.map( row => {
-        //             let id = row.id;
-        //             let distance = row.distance;
-        //             let name = row.name;
-        //             console.log (`${id}. ${distance}km - ${name}`);
-        //         })
-        //     }
-        //     endConnection();
-        //   });
-        //   break;
 
         case 'add':
             let distance = process.argv[3];
@@ -141,6 +94,47 @@ const whenConnected = (err) => {
                 endConnection();
             })
             break;
+
+        case 'delete':
+            let delId = [process.argv[3]];
+
+            queryText='DELETE FROM workout WHERE id=$1';
+            client.query(queryText, delId, (err, res) => {
+                if (err) {
+                    console.log("query error", err.message);
+                } else {
+                    console.log("Deleting workout " + delId);
+                }
+                endConnection();
+            })
+            break;
+
+        default:
+            queryText = 'SELECT * FROM workout ORDER BY id';
+
+            client.query(queryText, (err, res) => {
+                if (err) {
+                    console.log("query error", err.message);
+                } else {
+                    const list = res.rows.map(row => {
+                        let id = row.id;
+                        let distance = row.distance;
+                        let name = row.name;
+                        let time = row.time;
+                        if (time === null) {
+                            console.log(`${id}. [ ] - ${distance}km - ${name}`);
+                        } else {
+                            var hoursMinutes = time.split(/[.:]/);
+                            //console.log(hoursMinutes);
+                            let pace = ((parseInt(hoursMinutes[0] * 60) + parseInt(hoursMinutes[1])) / distance).toFixed(2);
+                            //let date = row.created_at;
+                            // let dateFormat = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+                            console.log(`${id}. [x] - ${distance}km - ${name} - ${time} - ${pace} m/km`);
+                        }
+                    })
+                }
+                endConnection();
+            });
     }
 }
 
