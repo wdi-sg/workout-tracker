@@ -17,14 +17,10 @@ client.connect((err) => {
 
 
     if(process.argv[2] === "add"){
-
         let exercise = process.argv[3];
         let distance = process.argv[4];
-
         let inputValues = [exercise, distance];
-
         let queryText = "INSERT INTO workouts (exercise, distance) VALUES ($1, $2) RETURNING *";
-
         if (distance === undefined){
             console.log("Please input the distance and type of exercise!");
         } else if (exercise === undefined){
@@ -87,9 +83,7 @@ client.connect((err) => {
     } else if (process.argv[2] === "get"){
 
         if(process.argv[3] === "asc"){
-
             let queryText = "SELECT * FROM workouts ORDER BY id ASC";
-
             client.query(queryText, (err, res) => {
                 if (err) {
                   console.log("query error", err.message);
@@ -101,11 +95,8 @@ client.connect((err) => {
                       };
                 };
             });
-
         } else if (process.argv[3] === "dsc"){
-
             let queryText = "SELECT * FROM workouts ORDER BY id DESC";
-
             client.query(queryText, (err, res) => {
                 if (err) {
                   console.log("query error", err.message);
@@ -117,19 +108,20 @@ client.connect((err) => {
                       };
                 };
             });
-
         } else {
             console.log("please enter 'asc' or 'dsc' ");
         }
 
     } else {
-
         let queryText = "SELECT * FROM workouts ORDER BY id ASC";
-                console.log("Welcome to workout tracker!\nTo add into the database, please input 'add' followed by distance of the workout and the type of the workout (e.g. add run 12km). \nTo mark down the completeness of the workout, please input 'complete' followed by the ID of the workout and the time it took to complete the workout (e.g. complete 1 1.5hrs) \nTo delete a workout, please input 'delete' followed by the ID of the workout (e.g. delete 1) \nTo get a list of completed workouts ordered by time (ascending and descending), please input 'get' followed by 'asc' or 'dsc' (e.g. get asc) ");
-
+                console.log("\n\nWelcome to workout tracker!\n\nTo add into the database, please input 'add' followed by distance of the workout and the type of the workout (e.g. add run 12km). \nTo mark down the completeness of the workout, please input 'complete' followed by the ID of the workout and the time it took to complete the workout (e.g. complete 1 1.5hrs) \nTo delete a workout, please input 'delete' followed by the ID of the workout (e.g. delete 1) \nTo get a list of completed workouts ordered by time (ascending and descending), please input 'get' followed by 'asc' or 'dsc' (e.g. get asc) \n\n\nThe current list of workouts:\n");
         client.query(queryText, (err, res)=>{
             for(i=0; i<res.rows.length; i++){
-                console.log(res.rows[i].id + ". [] - " + res.rows[i].exercise + " - " + res.rows[i].distance + " - " + res.rows[i].created_at);
+                let bracket = "[]";
+                if(res.rows[i].time !== null){
+                    bracket = "[X]";
+                }
+                console.log(res.rows[i].id + ". " + bracket + " - " + res.rows[i].exercise + " - " + res.rows[i].distance + " - " + res.rows[i].created_at);
             };
         });
     };
