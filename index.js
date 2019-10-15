@@ -9,7 +9,7 @@ const configs = {
     };
 //CREATE NEW INSTANCE OF CLIENT----------------------
 const client = new pg.Client(configs);
-//CONNECT TO CLIENT----------------------------------
+//CONNECT TO CLIENT #1----------------------------------
 client.connect((err) => {
 
     if( err ){
@@ -22,12 +22,12 @@ client.connect((err) => {
       if (err) {
         console.log("query error", err.message);
       } else {
-        console.log("result", res.rows[0]);
+        console.log("That's it!");
       }
     });
   
   });
-//-----------------------------------------------------------
+//CONNECT TO CLIENT #2----------------------------------
 // const endConnection = ()=>{
 //     ​
 //         client.end(err => {
@@ -38,94 +38,55 @@ client.connect((err) => {
 //         })
 //     };
 
-//TO-DO LIST CODE--------------------------------
-// const fullList = process.argv;
-// let commandType = fullList[2];
-// let newTodo = fullList[3];
-// let doneNumber = fullList[3];
-
-
-
-// let newItem = function(){
-//   return itemNumber + ". [ ] " + newTodo;
-// }
-
-
-// const jsonfile = require('jsonfile');
-
-// const file = 'data.json'
-// const list = require('./data')
-// // const entireList =
-// if (commandType == "add"){
-
-//     jsonfile.readFile(file, (err, obj) => {
-
-
-//       let n = obj.todoItems.length+1;
-//       obj["todoItems"].push(n + ". [ ] - " + newTodo);
-//       obj["itemNames"].push(newTodo);
-//       console.log(commandType + "ing new item: " + newTodo);
-//       console.log("Your To-Do List is now: " + obj["todoItems"]);
-
-//       jsonfile.writeFile(file, obj, (err) => {
-//         console.log(err)
-//       })
-//       })
-//     } else if (commandType == "show"){
-//       jsonfile.readFile(file, (err, obj) => {
-//         console.log("Your To-Do List is now: " + obj["todoItems"]);
-
-//         jsonfile.writeFile(file, obj, (err) => {
-//           console.log(err)
-//         })
-//         })
-
-//     } else if (commandType == "done"){
-//       jsonfile.readFile(file, (err, obj) => {
-//         console.log("Done: " + obj["todoItems"][doneNumber-1]);
-//         obj["todoItems"][doneNumber-1] = doneNumber+"[X] " + obj["itemNames"][doneNumber-1]
-//         console.log("Your To-Do List is now: " + obj["todoItems"]);
-
-//         jsonfile.writeFile(file, obj, (err) => {
-//           console.log(err)
-//         })
-//         })
-//     } else if (commandType == "delete"){
-//       jsonfile.readFile(file, (err, obj) => {
-//         console.log("Removed: " + obj["todoItems"][doneNumber-1]);
-//         obj["todoItems"][doneNumber-1] = null;
-//         console.log("Your To-Do List is now: " + obj["todoItems"]);
-
-//         jsonfile.writeFile(file, obj, (err) => {
-//           console.log(err)
-//         })
-//         })
-// };
-
 //CALL QUERY METHODS (SELECT)--------------------------------
-let queryText = 'SELECT * FROM workouts';
+if (process.argv[2] === "show") {
+    let queryText = 'SELECT * FROM workouts';
+    client.query(queryText, (err, res) => {
+        if (err) {
+        console.log("query error", err.message);
+        } else {
+        // iterate through all of your results:
+            for( let i=0; i<res.rows.length; i++ ){
+                if (res.rows[i].time !== null){
+                    console.log(res.rows[i].id + ". [X] - ", res.rows[i].distance + "km - ", res.rows[i].name + " - ", res.rows[i].time);
+                } else {
+                console.log(res.rows[i].id + ". [ ] - ", res.rows[i].distance + "km - ", res.rows[i].name + " - ", res.rows[i].time);
+                }
+            }
+        }
+    });
+} else if (process.argv[2]==="complete") {
+    // queryText = 'UPDATE workouts SET time = process.argv[4] WHERE id = process.argv[3] RETURNING *';
+    // queryText = `UPDATE workouts SET time = ${process.argv[4]} WHERE id = ${process.argv[3]} RETURNING *';
+    // queryText = 'UPDATE workouts SET time = `${process.argv[4]}` WHERE id = `${process.argv[3]}` RETURNING *';
+    let value3 = process.argv[3];
+    let value4 = process.argv[4];
+    queryText = `UPDATE workouts SET time = ${value4} WHERE id = ${value3} RETURNING *`;
 
-client.query(queryText, (err, res) => {
-    if (err) {
-      console.log("query error", err.message);
-    } else {
-      // iterate through all of your results:
-      for( let i=0; i<res.rows.length; i++ ){
-        // console.log("result: ", res.rows[i]);
-        console.log(res.rows[i].id + ". [ ] - ", res.rows[i].distance + "km - ", res.rows[i].name);
-      }
-    }
-});
+    console.log("QQQ+++++++++++++++++++++++++++++++++++");
+    client.query(queryText, (err, res) => {
+        if (err) {
+          console.log("query error", err.message);
+        } else {
+          console.log("id of the thing you just completed:", res.rows[0].id);
+        }
+    });
+} else {
+
+    queryText = 'INSERT INTO workouts (distance, name) VALUES ($1, $2) RETURNING id';
+    console.log("WWW___________________________________");
+    const values = [`${process.argv[2]}`, `${process.argv[3]}`];
+
+    client.query(queryText, values, (err, res) => {
+        if (err) {
+        console.log("query error", err.message);
+        } else {
+        console.log("id of the thing you just created:", res.rows[0].id);
+        }
+    });
+}
 
 //CALL QUERY METHODS (INSERT)--------------------------------
-queryText = 'INSERT INTO workouts (distance, name) VALUES ($1, $2) RETURNING id';
 
-const values = [`${process.argv[2]}`, `${process.argv[3]}`];
 
-client.query(queryText, values, (err, res) => {
-    if (err) {
-      console.log("query error", err.message);
-    } else {
-      console.log("id of the thing you just created:", res.rows[0].id);
-    }
-});
+//CALL QUERY METHODS (UPDATE)--------------------------------
