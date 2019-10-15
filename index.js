@@ -40,7 +40,7 @@ client.connect((err) => {
 
 //CALL QUERY METHODS (SELECT)--------------------------------
 if (process.argv[2] === "show") {
-    let queryText = 'SELECT * FROM workouts';
+    let queryText = 'SELECT * FROM workouts ORDER BY id';
     client.query(queryText, (err, res) => {
         if (err) {
         console.log("query error", err.message);
